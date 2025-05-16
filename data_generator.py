@@ -200,8 +200,8 @@ if __name__ == "__main__":
             await conn.run_sync(models.Base.metadata.create_all)
         
         await generate_initial_data(
-            count_users=50,       # Example: Generate 50 users
-            count_products=200,   # Example: Generate 200 products
+            count_users=5000,       # Example: Generate 50 users
+            count_products=10000,   # Example: Generate 200 products
             count_orders_per_user=5, # Avg orders per user
             count_reviews_per_product=3 # Avg reviews per product
         )
