@@ -140,8 +140,8 @@ async def create_fake_reviews(db: AsyncSession, users: list[models.User], produc
 
 # --- Main Data Generation Function ---
 async def generate_initial_data(
-    count_users: int = 200,
-    count_products: int = 1000,
+    count_users: int = 5000,
+    count_products: int = 10000,
     count_orders_per_user: int = 5,
     count_reviews_per_product: int = 3
 ):
