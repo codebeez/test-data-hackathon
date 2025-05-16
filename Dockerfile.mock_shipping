@@ -1,0 +1,10 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY requirements_mock.txt .
+RUN pip install --no-cache-dir -r requirements_mock.txt
+
+COPY shipping_api_mock_app.py .
+
+CMD ["uvicorn", "shipping_api_mock_app:app", "--host", "0.0.0.0", "--port", "8001"]

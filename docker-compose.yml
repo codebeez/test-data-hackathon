@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  # Main FastAPI Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000" # Expose port 8000 of the container to port 8000 on the host
+    volumes:
+      - .:/app # Mount current directory to /app in container for live code changes (optional for hackathon)
+    depends_on:
+      db:
+        condition: service_healthy # Wait for DB to be healthy
+      redis:
+        condition: service_healthy # Wait for Redis to be healthy
+      shipping_api_mock:
+        condition: service_started # Wait for mock shipping API to start
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://hackathon_user:hackathon_pass@db/hackathon_db
+      - REDIS_URL=redis://redis:6379
+      - EXTERNAL_SHIPPING_API_URL=http://shipping_api_mock:8001/estimate
+    # command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload # Can override CMD in Dockerfile if needed
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: "30s" # Quoted
+      timeout: "10s"  # Quoted
+      retries: 5
+      start_period: "30s" # Quoted. Give more time for the app to start initially, especially with data generation
+
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine # Use a specific version of PostgreSQL
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/ # Persist database data
+    environment:
+      - POSTGRES_USER=hackathon_user
+      - POSTGRES_PASSWORD=hackathon_pass
+      - POSTGRES_DB=hackathon_db
+    ports:
+      - "5432:5432" # Expose PostgreSQL port (optional, for external DB tools)
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hackathon_user -d hackathon_db"]
+      interval: "10s" # Quoted
+      timeout: "5s"   # Quoted
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine # Use a specific version of Redis
+    ports:
+      - "6379:6379" # Expose Redis port (optional, for external tools)
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: "10s" # Quoted
+      timeout: "5s"   # Quoted
+      retries: 5
+      
+  # Mock Shipping API Service
+  shipping_api_mock:
+    build:
+      context: .
+      dockerfile: Dockerfile.mock_shipping
+    ports:
+      - "8001:8001" # Expose port 8001 for the mock shipping API
+    # No volumes needed as it's a stateless mock
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: "15s" # Quoted
+      timeout: "5s"   # Quoted
+      retries: 3
+      start_period: "10s" # Quoted
+
+volumes:
+  postgres_data: # Defines the named volume for PostgreSQL data persistence
