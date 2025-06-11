@@ -30,4 +30,5 @@ COPY . .
 # For this hackathon setup, --reload can be kept if frequent code changes are expected by participants
 # directly modifying the container's code (though usually they'd rebuild).
 # Let's remove --reload for a more "production-like" dummy app.
+EXPOSE 8000
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
