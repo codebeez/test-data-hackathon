@@ -18,7 +18,7 @@ services:
       shipping_api_mock:
         condition: service_started # Wait for mock shipping API to start
     environment:
-      - DATABASE_URL=postgresql://hackathon_user:7ylRKOD7JP5Ham9V64c6624sXp0MXFEh@dpg-d144d5fdiees73ari230-a/hackathon_db_hy6g
+      - DATABASE_URL=postgresql+asyncpg://hackathon_user:7ylRKOD7JP5Ham9V64c6624sXp0MXFEh@dpg-d144d5fdiees73ari230-a/hackathon_db_hy6g
       - REDIS_URL=redis://red-d144da7fte5s73dv6cqg:6379
       - EXTERNAL_SHIPPING_API_URL=http://shipping_api_mock:8001/estimate
     # command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload # Can override CMD in Dockerfile if needed
