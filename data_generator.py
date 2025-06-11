@@ -154,11 +154,11 @@ async def generate_initial_data(
     try:
         # Check if data already exists to prevent re-population (simplified check)
         # This check is also done in main.py's lifespan, but good to have here for standalone use
-        async with engine.connect() as conn: # Use engine for a quick check
-            result = await conn.execute(select(models.User).limit(1))
-            if result.scalar_one_or_none() is not None:
-                print("Data seems to already exist (checked in data_generator). Skipping generation.")
-                return
+        # async with engine.connect() as conn: # Use engine for a quick check
+        #     result = await conn.execute(select(models.User).limit(1))
+        #     if result.scalar_one_or_none() is not None:
+        #         print("Data seems to already exist (checked in data_generator). Skipping generation.")
+        #         return
 
         print(f"Generating {count_users} users...")
         users_list = await create_fake_users(async_session, count_users) # Renamed variable
