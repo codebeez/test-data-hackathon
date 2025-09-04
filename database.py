@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 
 # --- Configuration ---
 # Ensure these match your docker-compose.yml or local setup
-DATABASE_URL = "postgresql+asyncpg://hackathon_user:7ylRKOD7JP5Ham9V64c6624sXp0MXFEh@dpg-d144d5fdiees73ari230-a/hackathon_db_hy6g"
+DATABASE_URL = "postgresql+asyncpg://hackathon_user:hackathon_pass@db/hackathon_db"
 # For local testing without Docker, you might use:
 # DATABASE_URL = "postgresql+asyncpg://your_local_user:your_local_pass@localhost/your_local_db"
 

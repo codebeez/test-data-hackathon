@@ -26,7 +26,7 @@ import models
 from data_generator import generate_initial_data
 
 # --- Configuration ---
-REDIS_URL = "redis://red-d144da7fte5s73dv6cqg:6379" # Assumes Redis is running on 'redis' host, as in docker-compose
+REDIS_URL = "redis://redis:6379" # Assumes Redis is running on 'redis' host, as in docker-compose
 EXTERNAL_SHIPPING_API_URL = "http://shipping_api_mock:8001/estimate" # Mock service
 
 # --- Logging Setup ---
@@ -52,7 +52,7 @@ async def lifespan(app: FastAPI):
         # Check if products table is empty before populating
         result = await conn.execute(select(models.Product).limit(1))
         logger.info("Populating initial data...")
-        await generate_initial_data(count_users=100000, count_products=200000, count_orders_per_user=5, count_reviews_per_product=3)
+        await generate_initial_data(count_users=10000, count_products=20000, count_orders_per_user=5, count_reviews_per_product=3)
         logger.info("Initial data populated.")
         # if result.scalar_one_or_none() is None:
         #     logger.info("No products found. Populating initial data...")
