@@ -1,6 +1,7 @@
 import random
 from collections import defaultdict
-from typing import Any, TypeVar
+from pprint import pp
+from typing import Any
 
 import faker
 import sqlalchemy as sa
@@ -15,46 +16,12 @@ Faker.seed(10)
 fake = Faker()
 
 
-T = TypeVar("T")
-
 with engine.connect() as conn:
     inspector = inspect(conn)
     meta = sa.MetaData()
     tables = []
     for table in inspector.get_table_names():
         tables.append(sa.Table(table, meta, autoload_with=engine))
-
-
-def generate_users(model: type[User], amount: int = 100):
-    table: sa.Table = model.__table__
-    columns = list(table.columns)
-    attributes = model.__dict__
-    filtered_attributes = {}
-    for attr_name, attr_value in attributes.items():
-        if not attr_name.startswith("_"):  # Avoid internal attributes
-            filtered_attributes[attr_name] = attr_value
-    return model
-
-
-def generate_products(model: type[Product], amount: int = 100):
-    table: sa.Table = model.__table__
-    columns = list(table.columns)
-    attributes = model.__dict__
-    filtered_attributes = {}
-    for attr_name, attr_value in attributes.items():
-        if not attr_name.startswith("_"):  # Avoid internal attributes
-            filtered_attributes[attr_name] = attr_value
-    return model
-
-
-def generate_orders(model: type[Order], amount: int = 100):
-    table: sa.Table = model.__table__
-    attributes = model.__dict__
-    filtered_attributes = {}
-    for attr_name, attr_value in attributes.items():
-        if not attr_name.startswith("_"):  # Avoid internal attributes
-            filtered_attributes[attr_name] = attr_value
-    return model
 
 
 def create_DAG(models: list[type[Base]]) -> list[tuple[type[Base], list[type[Base]]]]:
@@ -131,8 +98,6 @@ def generate_model(model_input: tuple[type[Base], list[type[Base]]], amount: int
     """
     Generates a specified number of instances for a given model.
     """
-    # Clear the history of unique values for this generation batch.
-    # This prevents UniquenessExceptions if you call the function multiple times.
     model = model_input[0]
     dependencies_mapping = {m[0]: m[1] for m in model_input[1]}
     fake.unique.clear()
@@ -197,4 +162,5 @@ all_models = [Review, Product, User, Order]
 sorted_models = create_DAG(all_models)
 for model in sorted_models:
     generate_model(model, 100)
-print(created_models)
+
+pp(dict(created_models))
